@@ -1,14 +1,14 @@
+import "./SearchItem.scss";
 import { useState } from "react";
 import searchIcon from "../../resorces/search.svg";
-import "./SearchItem.scss";
+import { useDispatch, useSelector } from "react-redux";
+import { selectWasSearched } from "../../selectors/selectors";
 
-const SearchItem = ({
-    searchTask,
-    showAllTasks,
-    wasSearched,
-    setWasSearched,
-}) => {
+const SearchItem = ({ searchTask, showAllTasks }) => {
     const [searchText, setSearchText] = useState("");
+    const wasSearched = useSelector(selectWasSearched);
+
+    const dispatch = useDispatch();
 
     const onValueChangeSearch = ({ target }) => {
         setSearchText(target.value);
@@ -19,13 +19,19 @@ const SearchItem = ({
         if (searchText && searchText.length < 60) {
             searchTask(searchText);
             setSearchText("");
-            setWasSearched(true);
+            dispatch({
+                type: "SET_WAS_SEARCH",
+                payload: { wasSearched: true },
+            });
         }
     };
 
     const onClickShowAllTasks = () => {
         showAllTasks();
-        setWasSearched(false);
+        dispatch({
+            type: "SET_WAS_SEARCH",
+            payload: { wasSearched: false },
+        });
     };
 
     return (

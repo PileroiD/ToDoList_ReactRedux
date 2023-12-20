@@ -10,7 +10,6 @@ const Actions = ({
     showAllTasks,
     sortTasks,
     wasSearched,
-    setWasSearched,
 }) => {
     return (
         <div className="actions">
@@ -19,8 +18,6 @@ const Actions = ({
                 <SearchItem
                     searchTask={searchTask}
                     showAllTasks={showAllTasks}
-                    wasSearched={wasSearched}
-                    setWasSearched={setWasSearched}
                 />
                 <SortTasks sortTasks={sortTasks} />
             </div>

@@ -1,45 +1,48 @@
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
+import "./App.scss";
 import ItemsList from "../components/itemsList/ItemsList";
 import Actions from "../components/actions/Actions";
 import TodoListService from "../services/TodoListService";
+import { selectTasks, selectIsLoading } from "../selectors/selectors";
 
-import { useState, useEffect } from "react";
-import "./App.scss";
+import { setIsLoading, setTasks, setWasSearched } from "../actions/actions";
 
 function App() {
-    const [tasks, setTasks] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [updateTasksFlag, setUpdateTasksFlag] = useState(false);
-    const [wasSearched, setWasSearched] = useState(false);
+    const tasks = useSelector(selectTasks);
+    const isLoading = useSelector(selectIsLoading);
 
-    const updateTasks = () => setUpdateTasksFlag(!updateTasksFlag);
+    const dispatch = useDispatch();
 
     const todoListService = new TodoListService();
 
     useEffect(() => {
-        setIsLoading(true);
+        updateTasks();
+    }, []);
 
+    const updateTasks = () => {
+        dispatch(setIsLoading(true));
         todoListService
             .getAllTasks()
-            .then((data) => setTasks(data))
-            .finally(() => setIsLoading(false));
-    }, [updateTasksFlag]);
+            .then((data) => {
+                dispatch(setTasks(data));
+            })
+            .finally(() => {
+                dispatch(setIsLoading(false));
+            });
+    };
 
     const addTask = (text) => {
-        setIsLoading(true);
-
         todoListService.addTask(text).finally(() => {
-            setIsLoading(false);
             updateTasks();
         });
     };
 
     const updateTask = (newtext, taskId) => {
-        setIsLoading(true);
-
         todoListService.updateTask(newtext, taskId).finally(() => {
-            setIsLoading(false);
+            dispatch(setWasSearched(false));
             updateTasks();
-            setWasSearched(false);
         });
     };
 
@@ -56,16 +59,13 @@ function App() {
             })
             .filter((item) => item !== undefined);
 
-        setTasks(newTasks);
+        dispatch(setTasks(newTasks));
     };
 
     const deleteTask = (taskId) => {
-        setIsLoading(true);
-
         todoListService.deleteTask(taskId).finally(() => {
-            setIsLoading(false);
             updateTasks();
-            setWasSearched(false);
+            dispatch(setWasSearched(false));
         });
     };
 
@@ -89,7 +89,7 @@ function App() {
             }
         });
 
-        setTasks(sortedTasks);
+        dispatch(setTasks(sortedTasks));
     };
 
     return (
@@ -100,15 +100,12 @@ function App() {
                     searchTask={searchTask}
                     showAllTasks={showAllTasks}
                     sortTasks={sortTasks}
-                    wasSearched={wasSearched}
-                    setWasSearched={setWasSearched}
                 />
                 {isLoading ? (
                     <div className="loader"></div>
                 ) : tasks.length ? (
                     <ItemsList
                         updateTask={updateTask}
-                        tasks={tasks}
                         deleteTask={deleteTask}
                     />
                 ) : (

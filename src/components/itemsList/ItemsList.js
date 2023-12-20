@@ -1,8 +1,12 @@
+import { useSelector } from "react-redux";
 import Item from "../Item/Item";
 
 import "./ItemsList.scss";
+import { selectTasks } from "../../selectors/selectors";
 
-const ItemsList = ({ tasks, updateTask, deleteTask }) => {
+const ItemsList = ({ updateTask, deleteTask }) => {
+    const tasks = useSelector(selectTasks);
+
     const tasksList = tasks.map((task) => {
         return (
             <Item
