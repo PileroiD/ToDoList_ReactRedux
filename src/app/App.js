@@ -4,10 +4,14 @@ import { useDispatch, useSelector } from "react-redux";
 import "./App.scss";
 import ItemsList from "../components/itemsList/ItemsList";
 import Actions from "../components/actions/Actions";
-import TodoListService from "../services/TodoListService";
 import { selectTasks, selectIsLoading } from "../selectors/selectors";
-
-import { setIsLoading, setTasks, setWasSearched } from "../actions/actions";
+import {
+    setTasks,
+    setAllTasksAction,
+    addTaskAction,
+    updateTaskAction,
+    deleteTaskAction,
+} from "../actions/actions";
 
 function App() {
     const tasks = useSelector(selectTasks);
@@ -15,35 +19,24 @@ function App() {
 
     const dispatch = useDispatch();
 
-    const todoListService = new TodoListService();
-
     useEffect(() => {
         updateTasks();
     }, []);
 
     const updateTasks = () => {
-        dispatch(setIsLoading(true));
-        todoListService
-            .getAllTasks()
-            .then((data) => {
-                dispatch(setTasks(data));
-            })
-            .finally(() => {
-                dispatch(setIsLoading(false));
-            });
+        dispatch(setAllTasksAction);
     };
 
     const addTask = (text) => {
-        todoListService.addTask(text).finally(() => {
-            updateTasks();
-        });
+        dispatch(addTaskAction(text));
     };
 
     const updateTask = (newtext, taskId) => {
-        todoListService.updateTask(newtext, taskId).finally(() => {
-            dispatch(setWasSearched(false));
-            updateTasks();
-        });
+        dispatch(updateTaskAction(newtext, taskId));
+    };
+
+    const deleteTask = (taskId) => {
+        dispatch(deleteTaskAction(taskId));
     };
 
     const searchTask = (searchingText) => {
@@ -60,13 +53,6 @@ function App() {
             .filter((item) => item !== undefined);
 
         dispatch(setTasks(newTasks));
-    };
-
-    const deleteTask = (taskId) => {
-        todoListService.deleteTask(taskId).finally(() => {
-            updateTasks();
-            dispatch(setWasSearched(false));
-        });
     };
 
     const showAllTasks = () => {

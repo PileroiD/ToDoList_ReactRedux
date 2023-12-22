@@ -2,19 +2,15 @@
   "tasks": [
     {
       "text": "React",
-      "id": 19
+      "id": 30
     },
     {
-      "text": "Redux23",
-      "id": 20
+      "text": "Vue",
+      "id": 31
     },
     {
-      "text": "hello23e23e",
-      "id": 24
-    },
-    {
-      "text": "hello",
-      "id": 25
+      "text": "Git",
+      "id": 32
     }
   ]
 }
